@@ -28,3 +28,5 @@
 
 ## Docker-compose
 ```docker-compose up```
+會啟動DB, DB的manager（http://localhost:8081)[http://localhost:8081], nodejs server side.
+前提是你有裝docker & docker-compose
