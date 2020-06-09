@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Socket IO Web client</title>
+  <script
+  src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+  integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs="
+  crossorigin="anonymous"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/socket.io-client@2/dist/socket.io.js"></script>
+</head>
+<style type="text/css">
+  .main{
+    border: 1px solid black; 
+    width: 500px; 
+    background-color: white;
+    padding: 0px;
+    border-radius: 10px;
+    position: absolute;
+    right: 90px;
+    top: 20px;
+    bottom: 20px;
+    min-height: 200px;
+  }
+  .panels {
+    /*padding: 10px;*/
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+  }
+  .panel {
+    border: 0px solid black;
+    background-color: rgb(242, 246, 247);
+    border-radius: 10px;
+  }
+
+  .code-panel {
+    position: relative;
+    width: 100%;
+    height: 50%;
+  }
+  .console-panel {
+    position: relative;
+    margin-top: 5px;
+    width: 100%;
+    height: 49%;
+    background-color: rgb(0, 0, 0);
+  }
+  .content {
+    margin: 5px;
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    right: 5px;
+    bottom: 5px;
+    overflow-y: auto;
+  }
+  .code {
+    margin: 0px;
+  }
+  .log {
+    margin: 0px;
+    color: rgb(245, 222, 179);
+  }
+
+</style>
+<body>
+  <h1>Socket IO Web client</h1>
+  <dir class="main">
+    <div class="panels">
+      
+      <div class="panel code-panel">
+        <div class="code-content content">
+          <pre class="code"></pre>
+        </div>
+      </div>
+      <div class="panel console-panel">
+        <div class="console-content content" >
+          <pre class="log">write log in here</pre>
+        </div>
+      </div>
+      <div>
+        <button onclick="sendCode()">Send Code</button>
+      </div>
+    </div>
+  </dir>
+  <script type="text/javascript">
+    $('.code').text("import time\n\ntime.sleep(1)\nfor i in range(5):\n    print(i)\n    print('----------')\n    time.sleep(1)")
+
+    var userName = "Tid";
+    var boardConnectingState = false;
+
+    // For socket IO
+    var sessionInfo = {
+      'roomId': userName,
+      'deviceType': 'web',
+      'url': document.URL 
+    };
+    var roomId = "";
+
+    socket = io(document.URL);
+    socket.on('connect', function(){
+      console.log('Socket-io on connect: ', socket.id);
+  
+      socket.emit('joinRoom', sessionInfo);
+      socket.emit('request room info', sessionInfo, function(roomInfo){
+        console.log('roomInfo: ', roomInfo)
+        if (roomInfo.length == 1) {
+          boardConnectingState = false;
+        } else if (roomInfo.length > 1){
+          boardConnectingState = true;
+        }
+      })
+    });
+
+    socket.on('board msg', (msgObj)=>{
+      console.log(msgObj);
+      switch(msgObj.cmd) {
+        case 'board-connected':
+          console.log('board-connected')
+          boardConnectingState = true;
+          break;
+
+        case 'board-disconnected':
+          console.log('board-disconnected')
+          boardConnectingState = false;
+          break;
+
+        case 'board-log':
+          console.log('board-log')
+          $('.log').text($('.log').text()+'\n'+msgObj.log)
+          break;
+      }
+    })
+    function sendCode() {
+      var code = $('.code').text()
+      var msgObj = {
+        'cmd': 'code uplaod',
+        'code': code,
+        'roomId': userName,
+        'deviceType': 'web',
+        'url': document.URL 
+      }
+      console.log('web msg', msgObj)
+      socket.emit('web msg', msgObj)
+    }
+
+  </script>
+</body>
+</html>

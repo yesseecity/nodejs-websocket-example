@@ -5,19 +5,7 @@
 ### Server 端解說
 
 啟動方式```node start-socket-server.js```
-先透過'socket.io'
 
-先設定SQL DB 的資訊，再建立 socket server
-
-當Socket有Client端連上後
-透過 './server/socket-control.js' 模組進行 DB 欄未監控
-當值改變後 透過socket 跟client端說有改變(於'./server/socket-control.js' 39~57行）。
-同時監聽client 是否透過socket 發出 'db change age'事件並回寫到DB （於 socket-control.js）  
-
-### Client 端解說
-
-啟動方式```node client-user.js```
-先變更年齡，再監聽DB是否有再變更
 
 ## 環境建製
 
@@ -28,5 +16,5 @@
 
 ## Docker-compose
 ```docker-compose up```
-會啟動DB, DB的manager（http://localhost:8081)[http://localhost:8081], nodejs server side.
+會啟動 ```start-socket-server.js```.
 前提是你有裝docker & docker-compose
