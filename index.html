@@ -130,6 +130,7 @@
         case 'board-log':
           console.log('board-log')
           $('.log').text($('.log').text()+'\n'+msgObj.log)
+          $('.console-content')[0].scrollTop = $('.console-content')[0].scrollHeight
           break;
       }
     })
